@@ -1,0 +1,41 @@
+{
+  "name": "template-dashboard-sveltekit",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "format": "prettier --write src docs README.md AGENTS.md package.json components.json svelte.config.js vite.config.ts tsconfig.json",
+    "format:check": "prettier --check src docs README.md AGENTS.md package.json components.json svelte.config.js vite.config.ts tsconfig.json",
+    "lint": "pnpm check && pnpm format:check"
+  },
+  "dependencies": {
+    "@lucide/svelte": "^1.39.0",
+    "@tiptap/core": "^3.31.3",
+    "@tiptap/starter-kit": "^3.31.3",
+    "bits-ui": "^2.19.0",
+    "clsx": "^2.1.1",
+    "mode-watcher": "^1.1.0",
+    "svelte-sonner": "^1.2.1",
+    "tailwind-merge": "^3.6.0",
+    "tailwind-variants": "^3.3.1"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-static": "^3.0.10",
+    "@sveltejs/kit": "latest",
+    "@sveltejs/vite-plugin-svelte": "latest",
+    "@tailwindcss/vite": "^4",
+    "prettier": "^3.9.6",
+    "prettier-plugin-svelte": "latest",
+    "shadcn-svelte": "latest",
+    "svelte": "latest",
+    "svelte-check": "latest",
+    "tailwindcss": "^4",
+    "typescript": "^5",
+    "vite": "latest"
+  },
+  "packageManager": "pnpm@11.22.0"
+}
