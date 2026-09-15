@@ -3,7 +3,7 @@
 ## Stack dan package manager
 
 - Gunakan SvelteKit, Svelte 5 runes, TypeScript strict, Tailwind CSS 4, dan shadcn-svelte.
-- Gunakan PNPM untuk install dan seluruh script.
+- Gunakan Bun untuk install dan seluruh script.
 
 ## Sebelum menulis kode
 
@@ -14,4 +14,4 @@
 
 ## Verifikasi
 
-Jalankan `pnpm format`, `pnpm check`, dan `pnpm build` sebelum selesai.
+Jalankan `bun run format`, `bun run check`, dan `bun run build` sebelum selesai.

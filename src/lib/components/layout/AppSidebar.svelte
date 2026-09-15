@@ -11,7 +11,7 @@
   import * as Sidebar from "$lib/components/ui/sidebar";
   const items = [
     { label: "Overview", href: "/dashboard", icon: LayoutGrid },
-    { label: "Live Monitoring", href: "/dashboard", icon: Video },
+    { label: "Live Monitoring", href: "/monitoring", icon: Video },
     { label: "Event History", href: "/posts", icon: Clock3 },
     { label: "Devices", href: "/users", icon: Monitor },
     { label: "Reports", href: "/posts", icon: FileText },
@@ -26,9 +26,11 @@
       ? true
       : label === "Event History" && pathname.startsWith("/posts")
         ? true
-        : label === "Devices" && pathname.startsWith("/users")
+        : label === "Live Monitoring" && pathname.startsWith("/monitoring")
           ? true
-          : false;
+          : label === "Devices" && pathname.startsWith("/users")
+            ? true
+            : false;
 </script>
 
 <Sidebar.Root collapsible="icon">
