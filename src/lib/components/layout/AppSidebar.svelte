@@ -15,7 +15,7 @@
     { label: "Event History", href: "/posts", icon: Clock3 },
     { label: "Devices", href: "/devices", icon: Monitor },
     { label: "Reports", href: "/reports", icon: FileText },
-    { label: "Settings", href: "/users", icon: Settings },
+    { label: "Settings", href: "/settings", icon: Settings },
   ] as const;
 
   const isItemActive = (
@@ -32,7 +32,9 @@
             ? true
             : label === "Reports" && pathname.startsWith("/reports")
               ? true
-              : false;
+              : label === "Settings" && pathname.startsWith("/settings")
+                ? true
+                : false;
 </script>
 
 <Sidebar.Root collapsible="icon">
