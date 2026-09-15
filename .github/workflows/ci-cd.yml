@@ -42,6 +42,21 @@ jobs:
       - name: Build application
         run: bun run build
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Validate Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          build-args: |
+            PUBLIC_R2_VIDEO_BASE_URL=${{ vars.PUBLIC_R2_VIDEO_BASE_URL }}
+          cache-from: type=gha
+
+      - name: Validate Compose configuration
+        run: docker compose --env-file deploy/.env.example -f deploy/compose.yaml config --quiet
+
   publish:
     name: Publish image
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
@@ -140,3 +155,13 @@ jobs:
             "docker login ghcr.io --username '$GHCR_USERNAME' --password-stdin"
           ssh -i "$HOME/.ssh/deploy_key" "$VPS_USER@$VPS_HOST" \
             "cd '$VPS_APP_DIR' && IMAGE_NAME='$IMAGE_NAME' IMAGE_TAG='$IMAGE_TAG' docker compose --env-file .env -f deploy/compose.yaml pull && IMAGE_NAME='$IMAGE_NAME' IMAGE_TAG='$IMAGE_TAG' docker compose --env-file .env -f deploy/compose.yaml up -d --remove-orphans; deploy_status=\$?; docker logout ghcr.io >/dev/null 2>&1 || true; exit \$deploy_status"
+
+  smoke-test:
+    name: Smoke test production
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check production homepage
+        run: curl --fail --silent --show-error --location --retry 5 --retry-delay 10 --retry-connrefused https://tbvector.tech/ >/dev/null
