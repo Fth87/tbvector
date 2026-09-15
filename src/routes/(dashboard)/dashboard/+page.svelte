@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { resolve } from "$app/paths";
   import Activity from "@lucide/svelte/icons/activity";
   import ChevronLeft from "@lucide/svelte/icons/chevron-left";
   import ChevronRight from "@lucide/svelte/icons/chevron-right";
@@ -323,10 +324,12 @@
 
                 <div class="grid grid-cols-2 gap-2">
                   <Button
+                    href={resolve("/monitoring")}
                     size="sm"
                     class="h-7 text-[11px] bg-destructive text-destructive-foreground hover:bg-destructive/90"
                     >Review Event <ArrowRight data-icon="inline-end" /></Button
                   ><Button
+                    href={resolve("/posts")}
                     size="sm"
                     variant="outline"
                     class="h-7 bg-device-surface text-[11px]"

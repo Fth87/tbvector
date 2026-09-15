@@ -10,7 +10,7 @@
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "format": "prettier --write src docs README.md AGENTS.md package.json components.json svelte.config.js vite.config.ts tsconfig.json",
     "format:check": "prettier --check src docs README.md AGENTS.md package.json components.json svelte.config.js vite.config.ts tsconfig.json",
-    "lint": "pnpm check && pnpm format:check"
+    "lint": "bun run check && bun run format:check"
   },
   "dependencies": {
     "@lucide/svelte": "^1.39.0",
@@ -38,5 +38,5 @@
     "typescript": "^5",
     "vite": "latest"
   },
-  "packageManager": "pnpm@11.22.0"
+  "packageManager": "bun@1.4.0"
 }

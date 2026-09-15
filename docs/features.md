@@ -5,6 +5,6 @@
 3. Letakkan tipe/data demo feature di feature tersebut; shared type yang dipakai beberapa fitur boleh naik ke `src/lib`.
 4. Gunakan server load untuk query rahasia dan form actions untuk mutasi persistent.
 5. Tambahkan menu di `src/lib/components/layout/AppSidebar.svelte`.
-6. Jalankan autofixer pada komponen yang diubah, lalu `pnpm format`, `pnpm check`, dan `pnpm build`.
+6. Jalankan autofixer pada komponen yang diubah, lalu `bun run format`, `bun run check`, dan `bun run build`.
 
 Jangan menyalin satu feature sebagai boilerplate. Mulai dari route terkecil yang bekerja dan ekstrak pola setelah benar-benar berulang.

@@ -17,6 +17,7 @@
   import * as Dialog from "$lib/components/ui/dialog";
   import * as Field from "$lib/components/ui/field";
   import * as Table from "$lib/components/ui/table";
+  import * as Sidebar from "$lib/components/ui/sidebar";
 
   let posts = $state<Post[]>(structuredClone(initialPosts));
   let open = $state(false),
@@ -97,11 +98,14 @@
 <svelte:head><title>Posts · Dashboard Kit</title></svelte:head>
 <div class="mx-auto flex max-w-6xl flex-col gap-6">
   <header class="flex items-end justify-between gap-4">
-    <div>
-      <h1 class="text-heading-3 font-bold tracking-tight">Posts</h1>
-      <p class="text-muted-foreground">
-        Manage rich text content and publishing.
-      </p>
+    <div class="flex min-w-0 items-center gap-3">
+      <Sidebar.Trigger aria-label="Toggle sidebar" />
+      <div class="min-w-0">
+        <h1 class="text-heading-3 font-bold tracking-tight">Posts</h1>
+        <p class="text-muted-foreground">
+          Manage rich text content and publishing.
+        </p>
+      </div>
     </div>
     <Button onclick={() => edit()}
       ><Plus data-icon="inline-start" />Add post</Button
