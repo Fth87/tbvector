@@ -270,7 +270,7 @@
       <div
         class="grid gap-3 md:grid-cols-[minmax(14rem,1.5fr)_minmax(9rem,1fr)_minmax(9rem,1fr)_minmax(10rem,1fr)]"
       >
-        <label class="flex flex-col gap-1">
+        <label class="flex flex-col gap-1 md:min-w-0">
           <span class="invisible text-xs leading-4">Search</span>
           <InputGroup.Root class="h-8 bg-background">
             <InputGroup.Addon>
@@ -286,80 +286,88 @@
           </InputGroup.Root>
         </label>
 
-        <label class="flex flex-col gap-1 text-xs text-muted-foreground">
-          <span>Device</span>
-          <Select.Root
-            type="single"
-            items={deviceItems}
-            value={device}
-            onValueChange={(value) => setParam("device", value)}
+        <div class="grid grid-cols-3 gap-3 md:contents">
+          <label
+            class="flex min-w-0 flex-col gap-1 text-xs text-muted-foreground"
           >
-            <Select.Trigger
-              class="w-full bg-background"
-              size="sm"
-              aria-label="Filter by device"
+            <span>Device</span>
+            <Select.Root
+              type="single"
+              items={deviceItems}
+              value={device}
+              onValueChange={(value) => setParam("device", value)}
             >
-              <Select.Value placeholder="All" />
-            </Select.Trigger>
-            <Select.Content>
-              {#each deviceItems as item (item.value)}
-                <Select.Item value={item.value} label={item.label}>
-                  {item.label}
-                </Select.Item>
-              {/each}
-            </Select.Content>
-          </Select.Root>
-        </label>
+              <Select.Trigger
+                class="w-full bg-background"
+                size="sm"
+                aria-label="Filter by device"
+              >
+                <Select.Value placeholder="All" />
+              </Select.Trigger>
+              <Select.Content>
+                {#each deviceItems as item (item.value)}
+                  <Select.Item value={item.value} label={item.label}>
+                    {item.label}
+                  </Select.Item>
+                {/each}
+              </Select.Content>
+            </Select.Root>
+          </label>
 
-        <label class="flex flex-col gap-1 text-xs text-muted-foreground">
-          <span>Status</span>
-          <Select.Root
-            type="single"
-            items={statusItems}
-            value={status}
-            onValueChange={(value) => setParam("status", value)}
+          <label
+            class="flex min-w-0 flex-col gap-1 text-xs text-muted-foreground"
           >
-            <Select.Trigger
-              class="w-full bg-background"
-              size="sm"
-              aria-label="Filter by status"
+            <span>Status</span>
+            <Select.Root
+              type="single"
+              items={statusItems}
+              value={status}
+              onValueChange={(value) => setParam("status", value)}
             >
-              <Select.Value placeholder="All" />
-            </Select.Trigger>
-            <Select.Content>
-              {#each statusItems as item (item.value)}
-                <Select.Item value={item.value} label={item.label}>
-                  {item.label}
-                </Select.Item>
-              {/each}
-            </Select.Content>
-          </Select.Root>
-        </label>
+              <Select.Trigger
+                class="w-full bg-background"
+                size="sm"
+                aria-label="Filter by status"
+              >
+                <Select.Value placeholder="All" />
+              </Select.Trigger>
+              <Select.Content>
+                {#each statusItems as item (item.value)}
+                  <Select.Item value={item.value} label={item.label}>
+                    {item.label}
+                  </Select.Item>
+                {/each}
+              </Select.Content>
+            </Select.Root>
+          </label>
 
-        <label class="flex flex-col gap-1 text-xs text-muted-foreground">
-          <span>Sort by</span>
-          <Select.Root
-            type="single"
-            items={sortItems}
-            value={sort}
-            onValueChange={(value) => setParam("sort", value)}
+          <label
+            class="flex min-w-0 flex-col gap-1 text-xs text-muted-foreground"
           >
-            <Select.Trigger
-              class="w-full bg-background"
-              size="sm"
-              aria-label="Sort events"
+            <span>Sort by</span>
+            <Select.Root
+              type="single"
+              items={sortItems}
+              value={sort}
+              onValueChange={(value) => setParam("sort", value)}
             >
-              <Select.Value placeholder="Newest" />
-            </Select.Trigger>
-            <Select.Content>
-              {#each sortItems as item (item.value)}
-                <Select.Item value={item.value} label={item.label}>
-                  {item.label}
-                </Select.Item>
-              {/each}
-            </Select.Content>
-          </Select.Root>
-        </label>
+              <Select.Trigger
+                class="w-full bg-background"
+                size="sm"
+                aria-label="Sort events"
+              >
+                <Select.Value placeholder="Newest" />
+              </Select.Trigger>
+              <Select.Content>
+                {#each sortItems as item (item.value)}
+                  <Select.Item value={item.value} label={item.label}>
+                    {item.label}
+                  </Select.Item>
+                {/each}
+              </Select.Content>
+            </Select.Root>
+          </label>
+        </div>
       </div>
 
       <Table.Root class="min-w-[720px] text-xs">
