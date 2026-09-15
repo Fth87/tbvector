@@ -322,7 +322,6 @@
             props={{
               xAxis: {
                 tickSpacing: 64,
-                tickOcclusion: { padding: 8, priority: "start-end" },
               },
               yAxis: { tickSpacing: 50 },
             }}
