@@ -61,7 +61,7 @@
     open = true;
   }
   function save() {
-    if (!title.trim()) return toast.error("Judul wajib diisi.");
+    if (!title.trim()) return toast.error("A title is required.");
     const entry: Post = {
       id: editingId ?? Date.now(),
       title: title.trim(),
@@ -77,12 +77,12 @@
       : [entry, ...posts];
     postStorage.write(posts);
     open = false;
-    toast.success(editingId ? "Post diperbarui." : "Post dibuat.");
+    toast.success(editingId ? "Post updated." : "Post created.");
   }
   function remove(id: number) {
     posts = posts.filter((post) => post.id !== id);
     postStorage.write(posts);
-    toast.success("Post dihapus.");
+    toast.success("Post deleted.");
   }
   function toggle(post: Post) {
     posts = posts.map((item) =>
@@ -98,33 +98,33 @@
 <div class="mx-auto flex max-w-6xl flex-col gap-6">
   <header class="flex items-end justify-between gap-4">
     <div>
-      <h1 class="text-3xl font-bold tracking-tight">Posts</h1>
+      <h1 class="text-heading-3 font-bold tracking-tight">Posts</h1>
       <p class="text-muted-foreground">
-        Kelola konten rich text dan publikasi.
+        Manage rich text content and publishing.
       </p>
     </div>
     <Button onclick={() => edit()}
-      ><Plus data-icon="inline-start" />Tambah post</Button
+      ><Plus data-icon="inline-start" />Add post</Button
     >
   </header>
   <Card.Root
     ><Card.Header
-      ><Card.Title>Daftar posts</Card.Title><Card.Description
-        >{visible.length} konten ditemukan.</Card.Description
+      ><Card.Title>Post list</Card.Title><Card.Description
+        >{visible.length} posts found.</Card.Description
       ></Card.Header
     ><Card.Content class="flex flex-col gap-4"
       ><div class="grid gap-3 sm:grid-cols-2">
         <Input
-          aria-label="Cari post"
-          placeholder="Cari judul"
+          aria-label="Search posts"
+          placeholder="Search by title"
           value={query}
           oninput={(event) => setParam("q", event.currentTarget.value)}
         /><select
-          class="h-9 rounded-md border bg-background px-3 text-sm"
+          class="h-9 rounded-md border-border bg-background px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
           aria-label="Filter status"
           value={status}
           onchange={(event) => setParam("status", event.currentTarget.value)}
-          ><option value="all">Semua status</option><option value="draft"
+          ><option value="all">All statuses</option><option value="draft"
             >Draft</option
           ><option value="published">Published</option></select
         >
@@ -132,13 +132,14 @@
       <Table.Root
         ><Table.Header
           ><Table.Row
-            ><Table.Head>Judul</Table.Head><Table.Head>Status</Table.Head
-            ><Table.Head>Diperbarui</Table.Head><Table.Head class="text-right"
-              >Aksi</Table.Head
+            ><Table.Head>Title</Table.Head><Table.Head>Status</Table.Head
+            ><Table.Head>Updated</Table.Head><Table.Head class="text-right"
+              >Actions</Table.Head
             ></Table.Row
           ></Table.Header
         ><Table.Body
           >{#each visible as post (post.id)}<Table.Row
+              class="transition-colors hover:bg-muted/50"
               ><Table.Cell
                 ><strong>{post.title}</strong><span
                   class="block text-xs text-muted-foreground">/{post.slug}</span
@@ -152,7 +153,7 @@
                   ></button
                 ></Table.Cell
               ><Table.Cell
-                >{new Intl.DateTimeFormat("id-ID").format(
+                >{new Intl.DateTimeFormat("en-US").format(
                   new Date(post.updatedAt),
                 )}</Table.Cell
               ><Table.Cell class="text-right"
@@ -164,13 +165,13 @@
                 ><Button
                   variant="ghost"
                   size="icon"
-                  aria-label={`Hapus ${post.title}`}
+                  aria-label={`Delete ${post.title}`}
                   onclick={() => remove(post.id)}><Trash /></Button
                 ></Table.Cell
               ></Table.Row
             >{:else}<Table.Row
               ><Table.Cell colspan={4} class="h-24 text-center"
-                >Tidak ada post.</Table.Cell
+                >No posts found.</Table.Cell
               ></Table.Row
             >{/each}</Table.Body
         ></Table.Root
@@ -181,25 +182,25 @@
 <Dialog.Root bind:open
   ><Dialog.Content class="sm:max-w-3xl"
     ><Dialog.Header
-      ><Dialog.Title>{editingId ? "Edit post" : "Tambah post"}</Dialog.Title
+      ><Dialog.Title>{editingId ? "Edit post" : "Add post"}</Dialog.Title
       ><Dialog.Description
-        >Judul, slug otomatis, dan konten rich text.</Dialog.Description
+        >Title, automatic slug, and rich text content.</Dialog.Description
       ></Dialog.Header
     ><Field.FieldGroup
       ><Field.Field
-        ><Field.Label for="post-title">Judul</Field.Label><Input
+        ><Field.Label for="post-title">Title</Field.Label><Input
           id="post-title"
           bind:value={title}
         /></Field.Field
       ><Field.Field
-        ><Field.Label>Konten</Field.Label>{#key editingId}<RichTextEditor
+        ><Field.Label>Content</Field.Label>{#key editingId}<RichTextEditor
             value={content}
             onchange={(html) => (content = html)}
           />{/key}</Field.Field
       ></Field.FieldGroup
     ><Dialog.Footer
-      ><Button variant="outline" onclick={() => (open = false)}>Batal</Button
-      ><Button onclick={save}>Simpan</Button></Dialog.Footer
+      ><Button variant="outline" onclick={() => (open = false)}>Cancel</Button
+      ><Button onclick={save}>Save</Button></Dialog.Footer
     ></Dialog.Content
   ></Dialog.Root
 >
