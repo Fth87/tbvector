@@ -12,3 +12,5 @@ bun run build
 Route contoh: `/dashboard`, `/users`, dan `/posts`. Data demo tersimpan di browser agar template dapat langsung dijalankan tanpa database. Users memiliki search, filter, sort, pagination, dan CRUD; posts memiliki filter, publikasi, CRUD, serta editor Tiptap.
 
 Lihat [dokumentasi](./docs/README.md) sebelum menambah fitur.
+
+Deployment Docker/VPS dijelaskan di [docs/deployment.md](./docs/deployment.md). Semua install dan script project menggunakan Bun.

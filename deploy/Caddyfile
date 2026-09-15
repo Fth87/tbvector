@@ -1,0 +1,6 @@
+{$APP_DOMAIN} {
+	root * /srv
+	encode gzip zstd
+	try_files {path} /200.html
+	file_server
+}
