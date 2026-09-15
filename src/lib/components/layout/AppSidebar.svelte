@@ -14,7 +14,7 @@
     { label: "Live Monitoring", href: "/monitoring", icon: Video },
     { label: "Event History", href: "/posts", icon: Clock3 },
     { label: "Devices", href: "/devices", icon: Monitor },
-    { label: "Reports", href: "/posts", icon: FileText },
+    { label: "Reports", href: "/reports", icon: FileText },
     { label: "Settings", href: "/users", icon: Settings },
   ] as const;
 
@@ -30,7 +30,9 @@
           ? true
           : label === "Devices" && pathname.startsWith("/devices")
             ? true
-            : false;
+            : label === "Reports" && pathname.startsWith("/reports")
+              ? true
+              : false;
 </script>
 
 <Sidebar.Root collapsible="icon">
