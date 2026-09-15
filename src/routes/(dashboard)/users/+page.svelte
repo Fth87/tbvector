@@ -72,7 +72,7 @@
   }
   function save() {
     if (!name.trim() || !email.includes("@"))
-      return toast.error("Nama dan email valid wajib diisi.");
+      return toast.error("A valid name and email are required.");
     users = editingId
       ? users.map((user) =>
           user.id === editingId
@@ -91,12 +91,12 @@
         ];
     userStorage.write(users);
     open = false;
-    toast.success(editingId ? "User diperbarui." : "User ditambahkan.");
+    toast.success(editingId ? "User updated." : "User added.");
   }
   function remove(id: number) {
     users = users.filter((user) => user.id !== id);
     userStorage.write(users);
-    toast.success("User dihapus.");
+    toast.success("User deleted.");
   }
 </script>
 
@@ -104,55 +104,56 @@
 <div class="mx-auto flex max-w-6xl flex-col gap-6">
   <header class="flex items-end justify-between gap-4">
     <div>
-      <h1 class="text-3xl font-bold tracking-tight">Users</h1>
+      <h1 class="text-heading-3 font-bold tracking-tight">Users</h1>
       <p class="text-muted-foreground">
-        Search, filter, sort, pagination, dan CRUD persistent.
+        Search, filter, sort, paginate, and persist CRUD data.
       </p>
     </div>
     <Button onclick={() => edit()}
-      ><Plus data-icon="inline-start" />Tambah user</Button
+      ><Plus data-icon="inline-start" />Add user</Button
     >
   </header>
   <Card.Root
     ><Card.Header
-      ><Card.Title>Daftar users</Card.Title><Card.Description
-        >{filtered.length} akun ditemukan.</Card.Description
+      ><Card.Title>User list</Card.Title><Card.Description
+        >{filtered.length} accounts found.</Card.Description
       ></Card.Header
     ><Card.Content class="flex flex-col gap-4">
       <div class="grid gap-3 sm:grid-cols-3">
         <Input
-          aria-label="Cari user"
-          placeholder="Cari nama atau email"
+          aria-label="Search users"
+          placeholder="Search by name or email"
           value={query}
           oninput={(event) => setParam("q", event.currentTarget.value)}
         /><select
-          class="h-9 rounded-md border bg-background px-3 text-sm"
+          class="h-9 rounded-md border-border bg-background px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
           aria-label="Filter status"
           value={status}
           onchange={(event) => setParam("status", event.currentTarget.value)}
-          ><option value="all">Semua status</option><option value="active"
-            >Aktif</option
-          ><option value="inactive">Nonaktif</option></select
+          ><option value="all">All statuses</option><option value="active"
+            >Active</option
+          ><option value="inactive">Inactive</option></select
         ><select
-          class="h-9 rounded-md border bg-background px-3 text-sm"
-          aria-label="Urutkan"
+          class="h-9 rounded-md border-border bg-background px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+          aria-label="Sort users"
           value={sort}
           onchange={(event) => setParam("sort", event.currentTarget.value)}
-          ><option value="name">Urutkan nama</option><option value="email"
-            >Urutkan email</option
+          ><option value="name">Sort by name</option><option value="email"
+            >Sort by email</option
           ></select
         >
       </div>
       <Table.Root
         ><Table.Header
           ><Table.Row
-            ><Table.Head>Nama</Table.Head><Table.Head>Role</Table.Head
+            ><Table.Head>Name</Table.Head><Table.Head>Role</Table.Head
             ><Table.Head>Status</Table.Head><Table.Head class="text-right"
-              >Aksi</Table.Head
+              >Actions</Table.Head
             ></Table.Row
           ></Table.Header
         ><Table.Body
           >{#each visible as user (user.id)}<Table.Row
+              class="transition-colors hover:bg-muted/50"
               ><Table.Cell
                 ><strong>{user.name}</strong><span
                   class="block text-xs text-muted-foreground">{user.email}</span
@@ -173,32 +174,32 @@
                 ><Button
                   variant="ghost"
                   size="icon"
-                  aria-label={`Hapus ${user.name}`}
+                  aria-label={`Delete ${user.name}`}
                   onclick={() => remove(user.id)}><Trash /></Button
                 ></Table.Cell
               ></Table.Row
             >{:else}<Table.Row
               ><Table.Cell colspan={4} class="h-24 text-center"
-                >Tidak ada user.</Table.Cell
+                >No users found.</Table.Cell
               ></Table.Row
             >{/each}</Table.Body
         ></Table.Root
       >
       <div class="flex items-center justify-between text-sm">
-        <span>Halaman {Math.min(currentPage, pages)} dari {pages}</span>
+        <span>Page {Math.min(currentPage, pages)} of {pages}</span>
         <div class="flex gap-2">
           <Button
             variant="outline"
             size="sm"
             disabled={currentPage <= 1}
             onclick={() => setParam("page", String(currentPage - 1))}
-            >Sebelumnya</Button
+            >Previous</Button
           ><Button
             variant="outline"
             size="sm"
             disabled={currentPage >= pages}
             onclick={() => setParam("page", String(currentPage + 1))}
-            >Berikutnya</Button
+            >Next</Button
           >
         </div>
       </div>
@@ -208,12 +209,12 @@
 <Dialog.Root bind:open
   ><Dialog.Content
     ><Dialog.Header
-      ><Dialog.Title>{editingId ? "Edit user" : "Tambah user"}</Dialog.Title
-      ><Dialog.Description>Perubahan tersimpan di browser.</Dialog.Description
+      ><Dialog.Title>{editingId ? "Edit user" : "Add user"}</Dialog.Title
+      ><Dialog.Description>Changes are saved in the browser.</Dialog.Description
       ></Dialog.Header
     ><Field.FieldGroup
       ><Field.Field
-        ><Field.Label for="user-name">Nama</Field.Label><Input
+        ><Field.Label for="user-name">Name</Field.Label><Input
           id="user-name"
           bind:value={name}
         /></Field.Field
@@ -225,8 +226,8 @@
         /></Field.Field
       ></Field.FieldGroup
     ><Dialog.Footer
-      ><Button variant="outline" onclick={() => (open = false)}>Batal</Button
-      ><Button onclick={save}>Simpan</Button></Dialog.Footer
+      ><Button variant="outline" onclick={() => (open = false)}>Cancel</Button
+      ><Button onclick={save}>Save</Button></Dialog.Footer
     ></Dialog.Content
   ></Dialog.Root
 >

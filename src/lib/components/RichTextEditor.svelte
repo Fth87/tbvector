@@ -21,7 +21,7 @@
         attributes: {
           class: "min-h-40 p-3 focus:outline-none",
           role: "textbox",
-          "aria-label": "Isi post",
+          "aria-label": "Post content",
         },
       },
       onUpdate: ({ editor }) => onchange?.(editor.getHTML()),
@@ -56,7 +56,7 @@
       type="button"
       size="icon"
       variant="ghost"
-      aria-label="Daftar"
+      aria-label="List"
       onclick={() => editor?.chain().focus().toggleBulletList().run()}
       ><List /></Button
     >

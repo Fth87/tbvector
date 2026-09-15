@@ -28,6 +28,7 @@
     "@sveltejs/kit": "latest",
     "@sveltejs/vite-plugin-svelte": "latest",
     "@tailwindcss/vite": "^4",
+    "layerchart": "^2.0.0-next.66",
     "prettier": "^3.9.6",
     "prettier-plugin-svelte": "latest",
     "shadcn-svelte": "latest",

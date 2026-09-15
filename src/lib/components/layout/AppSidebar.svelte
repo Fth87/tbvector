@@ -1,15 +1,34 @@
 <script lang="ts">
   import { page } from "$app/state";
   import { resolve } from "$app/paths";
-  import LayoutDashboard from "@lucide/svelte/icons/layout-dashboard";
-  import Users from "@lucide/svelte/icons/users";
+  import LayoutGrid from "@lucide/svelte/icons/layout-grid";
+  import Video from "@lucide/svelte/icons/video";
+  import Clock3 from "@lucide/svelte/icons/clock-3";
+  import Monitor from "@lucide/svelte/icons/monitor";
   import FileText from "@lucide/svelte/icons/file-text";
+  import Settings from "@lucide/svelte/icons/settings";
+  import LogOut from "@lucide/svelte/icons/log-out";
   import * as Sidebar from "$lib/components/ui/sidebar";
   const items = [
-    { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-    { label: "Users", href: "/users", icon: Users },
-    { label: "Posts", href: "/posts", icon: FileText },
+    { label: "Overview", href: "/dashboard", icon: LayoutGrid },
+    { label: "Live Monitoring", href: "/dashboard", icon: Video },
+    { label: "Event History", href: "/posts", icon: Clock3 },
+    { label: "Devices", href: "/users", icon: Monitor },
+    { label: "Reports", href: "/posts", icon: FileText },
+    { label: "Settings", href: "/users", icon: Settings },
   ] as const;
+
+  const isItemActive = (
+    label: (typeof items)[number]["label"],
+    pathname: string,
+  ) =>
+    label === "Overview" && pathname === "/dashboard"
+      ? true
+      : label === "Event History" && pathname.startsWith("/posts")
+        ? true
+        : label === "Devices" && pathname.startsWith("/users")
+          ? true
+          : false;
 </script>
 
 <Sidebar.Root collapsible="icon">
@@ -24,13 +43,16 @@
               href={resolve("/dashboard")}
               aria-label="Dashboard Kit"
               {...props}
-              ><span
-                class="grid size-8 shrink-0 place-items-center rounded-md bg-primary font-bold text-primary-foreground"
-                >D</span
-              ><span
-                class="truncate font-semibold group-data-[collapsible=icon]:hidden"
-                >Dashboard Kit</span
-              ></a
+              ><img
+                src="/Logo%20horizontal.png"
+                alt="Dashboard Kit"
+                class="h-8 w-auto max-w-36 object-contain group-data-[collapsible=icon]:hidden"
+              /><img
+                src="/logo%20vertical.png"
+                alt=""
+                aria-hidden="true"
+                class="hidden size-8 object-contain group-data-[collapsible=icon]:block"
+              /></a
             >{/snippet}</Sidebar.MenuButton
         ></Sidebar.MenuItem
       ></Sidebar.Menu
@@ -39,23 +61,30 @@
   <Sidebar.Content
     ><Sidebar.Group
       ><Sidebar.GroupLabel>Menu</Sidebar.GroupLabel><Sidebar.GroupContent
-        ><Sidebar.Menu
-          >{#each items as item (item.href)}{@const Icon =
-              item.icon}<Sidebar.MenuItem
-              ><Sidebar.MenuButton
-                isActive={page.url.pathname.startsWith(item.href)}
-                tooltipContent={item.label}
+        ><Sidebar.Menu class="gap-2"
+          >{#each items as item (item.label)}{@const Icon =
+              item.icon}{@const isActive = isItemActive(
+              item.label,
+              page.url.pathname,
+            )}<Sidebar.MenuItem
+              ><Sidebar.MenuButton {isActive} tooltipContent={item.label}
                 >{#snippet child({ props })}<a
                     href={resolve(item.href)}
-                    {...props}><Icon /><span>{item.label}</span></a
+                    {...props}
+                    ><Icon aria-hidden="true" /><span>{item.label}</span></a
                   >{/snippet}</Sidebar.MenuButton
               ></Sidebar.MenuItem
             >{/each}</Sidebar.Menu
         ></Sidebar.GroupContent
       ></Sidebar.Group
     ></Sidebar.Content
-  >
-  <Sidebar.Footer class="p-3 text-xs text-muted-foreground"
-    >Template v0.2</Sidebar.Footer
+  ><Sidebar.Footer class="p-3"
+    ><Sidebar.Menu
+      ><Sidebar.MenuItem
+        ><Sidebar.MenuButton tooltipContent="Logout"
+          ><LogOut /><span>Logout</span></Sidebar.MenuButton
+        ></Sidebar.MenuItem
+      ></Sidebar.Menu
+    ></Sidebar.Footer
   >
 </Sidebar.Root>

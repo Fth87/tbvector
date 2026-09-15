@@ -39,11 +39,12 @@ export const initialUsers: User[] = [
 export const initialPosts: Post[] = [
   {
     id: 1,
-    title: "Panduan memulai proyek",
+    title: "Getting started with the project",
     slug: "panduan-memulai-proyek",
     status: "published",
     updatedAt: "2026-09-12",
-    content: "<p>Mulai proyek dari template yang kecil dan mudah diubah.</p>",
+    content:
+      "<p>Start the project with a small template that is easy to change.</p>",
   },
   {
     id: 2,
