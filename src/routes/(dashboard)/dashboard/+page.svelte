@@ -438,7 +438,7 @@
     <Card.Root>
       <Card.Header
         ><Card.Title>Recent Events</Card.Title><Card.Action
-          ><Button variant="link" size="sm"
+          ><Button variant="link" size="sm" href={resolve("/devices")}
             >View All <ArrowRight data-icon="inline-end" /></Button
           ></Card.Action
         ></Card.Header

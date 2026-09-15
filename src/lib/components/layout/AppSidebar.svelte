@@ -13,7 +13,7 @@
     { label: "Overview", href: "/dashboard", icon: LayoutGrid },
     { label: "Live Monitoring", href: "/monitoring", icon: Video },
     { label: "Event History", href: "/posts", icon: Clock3 },
-    { label: "Devices", href: "/users", icon: Monitor },
+    { label: "Devices", href: "/devices", icon: Monitor },
     { label: "Reports", href: "/posts", icon: FileText },
     { label: "Settings", href: "/users", icon: Settings },
   ] as const;
@@ -28,7 +28,7 @@
         ? true
         : label === "Live Monitoring" && pathname.startsWith("/monitoring")
           ? true
-          : label === "Devices" && pathname.startsWith("/users")
+          : label === "Devices" && pathname.startsWith("/devices")
             ? true
             : false;
 </script>
