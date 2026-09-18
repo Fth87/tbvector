@@ -154,7 +154,7 @@ jobs:
           printf '%s' "$GHCR_TOKEN" | ssh -i "$HOME/.ssh/deploy_key" "$VPS_USER@$VPS_HOST" \
             "docker login ghcr.io --username '$GHCR_USERNAME' --password-stdin"
           ssh -i "$HOME/.ssh/deploy_key" "$VPS_USER@$VPS_HOST" \
-            "cd '$VPS_APP_DIR' && IMAGE_NAME='$IMAGE_NAME' IMAGE_TAG='$IMAGE_TAG' docker compose --env-file .env -f deploy/compose.yaml pull && IMAGE_NAME='$IMAGE_NAME' IMAGE_TAG='$IMAGE_TAG' docker compose --env-file .env -f deploy/compose.yaml up -d --remove-orphans; deploy_status=\$?; docker logout ghcr.io >/dev/null 2>&1 || true; exit \$deploy_status"
+            "docker network inspect tbvector-edge >/dev/null 2>&1 || docker network create tbvector-edge; cd '$VPS_APP_DIR' && IMAGE_NAME='$IMAGE_NAME' IMAGE_TAG='$IMAGE_TAG' docker compose --env-file .env -f deploy/compose.yaml pull && IMAGE_NAME='$IMAGE_NAME' IMAGE_TAG='$IMAGE_TAG' docker compose --env-file .env -f deploy/compose.yaml up -d --remove-orphans; deploy_status=\$?; docker logout ghcr.io >/dev/null 2>&1 || true; exit \$deploy_status"
 
   smoke-test:
     name: Smoke test production
