@@ -23,4 +23,4 @@ COPY --from=build /app/build /srv
 EXPOSE 80 443
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
-  CMD wget --spider --quiet http://127.0.0.1/ || exit 1
+  CMD wget -q -O /dev/null http://127.0.0.1:2019/config/ || exit 1

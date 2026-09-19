@@ -1,6 +1,16 @@
 {$APP_DOMAIN} {
-	root * /srv
-	encode gzip zstd
-	try_files {path} /200.html
-	file_server
+	# Backend lives in the tbvector-server repo, joined via the tbvector-edge network.
+	handle /api/* {
+		request_body {
+			max_size 10MB
+		}
+		reverse_proxy api:8000
+	}
+
+	handle {
+		root * /srv
+		encode gzip zstd
+		try_files {path} /200.html
+		file_server
+	}
 }

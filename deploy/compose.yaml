@@ -10,8 +10,11 @@ services:
     volumes:
       - caddy_data:/data
       - caddy_config:/config
+    networks:
+      - default
+      - edge
     healthcheck:
-      test: ["CMD", "wget", "--spider", "--quiet", "http://127.0.0.1/"]
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:2019/config/"]
       interval: 30s
       timeout: 5s
       retries: 3
@@ -20,3 +23,9 @@ services:
 volumes:
   caddy_data:
   caddy_config:
+
+networks:
+  # Shared with tbvector-server so Caddy can proxy /api/* to it. Created by the deploy job.
+  edge:
+    name: tbvector-edge
+    external: true
