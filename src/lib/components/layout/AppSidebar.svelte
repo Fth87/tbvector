@@ -8,7 +8,14 @@
   import FileText from "@lucide/svelte/icons/file-text";
   import Settings from "@lucide/svelte/icons/settings";
   import LogOut from "@lucide/svelte/icons/log-out";
+  import { goto } from "$app/navigation";
   import * as Sidebar from "$lib/components/ui/sidebar";
+
+  async function logout() {
+    await fetch("/api/auth/logout", { method: "POST" }).catch(() => {});
+    await goto(resolve("/login"));
+  }
+
   const items = [
     { label: "Overview", href: "/dashboard", icon: LayoutGrid },
     { label: "Live Monitoring", href: "/monitoring", icon: Video },
@@ -87,7 +94,7 @@
   ><Sidebar.Footer class="p-3"
     ><Sidebar.Menu
       ><Sidebar.MenuItem
-        ><Sidebar.MenuButton tooltipContent="Logout"
+        ><Sidebar.MenuButton tooltipContent="Logout" onclick={logout}
           ><LogOut /><span>Logout</span></Sidebar.MenuButton
         ></Sidebar.MenuItem
       ></Sidebar.Menu
