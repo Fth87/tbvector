@@ -13,131 +13,56 @@
   import * as Sidebar from "$lib/components/ui/sidebar";
   import * as Table from "$lib/components/ui/table";
   import { cn } from "$lib/utils.js";
+  import type { CoughEvent } from "./+page";
 
-  type EventStatus = "Under Monitoring" | "Resolved";
-  type EventRecord = {
-    id: number;
-    timestamp: string;
-    uuid: string;
-    deviceId: string;
-    status: EventStatus;
-    photo: string;
+  let { data } = $props();
+
+  // Meanings from server-handoff.md, section 2 ("result").
+  const results: Record<string, { label: string; tone: string }> = {
+    matched: {
+      label: "Matched",
+      tone: "border-success/20 bg-success/5 text-success",
+    },
+    ambiguous: {
+      label: "Ambiguous",
+      tone: "border-warning/25 bg-warning/5 text-warning",
+    },
+    unmatched: {
+      label: "Unmatched",
+      tone: "border-info/20 bg-info/5 text-info",
+    },
+    outside_view: {
+      label: "Outside view",
+      tone: "border-border bg-muted text-muted-foreground",
+    },
+    no_direction: {
+      label: "No direction",
+      tone: "border-border bg-muted text-muted-foreground",
+    },
   };
-
-  const events: EventRecord[] = [
-    {
-      id: 1,
-      timestamp: "2025-08-08T14:53:35",
-      uuid: "me2j4fxx",
-      deviceId: "TBV-02",
-      status: "Under Monitoring",
-      photo: "/overview/live%20camera%20feed.jpeg",
-    },
-    {
-      id: 2,
-      timestamp: "2025-08-08T14:53:52",
-      uuid: "me2j4t5d",
-      deviceId: "TBV-03",
-      status: "Under Monitoring",
-      photo: "/overview/Live%20Camera%20Feed2.png",
-    },
-    {
-      id: 3,
-      timestamp: "2025-08-08T15:02:11",
-      uuid: "me2j5aax",
-      deviceId: "TBV-01",
-      status: "Resolved",
-      photo: "/overview/Live%20Camera%20Feed3.png",
-    },
-    {
-      id: 4,
-      timestamp: "2025-08-08T15:15:44",
-      uuid: "me2j6bbc",
-      deviceId: "TBV-04",
-      status: "Resolved",
-      photo: "/overview/Live%20Camera%20Feed4.png",
-    },
-    {
-      id: 5,
-      timestamp: "2025-08-08T15:28:09",
-      uuid: "me2j7ccd",
-      deviceId: "TBV-02",
-      status: "Under Monitoring",
-      photo: "/overview/Live%20Camera%20Feed5.png",
-    },
-    {
-      id: 6,
-      timestamp: "2025-08-08T15:41:22",
-      uuid: "me2j8dde",
-      deviceId: "TBV-03",
-      status: "Resolved",
-      photo: "/overview/live%20camera%20feed.jpeg",
-    },
-    {
-      id: 7,
-      timestamp: "2025-08-08T16:03:18",
-      uuid: "me2j9eef",
-      deviceId: "TBV-01",
-      status: "Resolved",
-      photo: "/overview/Live%20Camera%20Feed2.png",
-    },
-    {
-      id: 8,
-      timestamp: "2025-08-08T16:17:45",
-      uuid: "me2jaffg",
-      deviceId: "TBV-04",
-      status: "Under Monitoring",
-      photo: "/overview/Live%20Camera%20Feed3.png",
-    },
-    {
-      id: 9,
-      timestamp: "2025-08-08T16:29:06",
-      uuid: "me2jbggs",
-      deviceId: "TBV-02",
-      status: "Resolved",
-      photo: "/overview/Live%20Camera%20Feed4.png",
-    },
-    {
-      id: 10,
-      timestamp: "2025-08-08T16:44:31",
-      uuid: "me2jchht",
-      deviceId: "TBV-03",
-      status: "Under Monitoring",
-      photo: "/overview/Live%20Camera%20Feed5.png",
-    },
-    {
-      id: 11,
-      timestamp: "2025-08-08T17:01:04",
-      uuid: "me2jdiix",
-      deviceId: "TBV-01",
-      status: "Resolved",
-      photo: "/overview/live%20camera%20feed.jpeg",
-    },
-    {
-      id: 12,
-      timestamp: "2025-08-08T17:18:29",
-      uuid: "me2jejya",
-      deviceId: "TBV-04",
-      status: "Under Monitoring",
-      photo: "/overview/Live%20Camera%20Feed2.png",
-    },
-  ];
+  const resultOf = (event: CoughEvent) =>
+    results[event.result ?? ""] ?? {
+      label: event.result ?? "Unknown",
+      tone: "border-border bg-muted text-muted-foreground",
+    };
+  const timeOf = (event: CoughEvent) => event.utc ?? event.received_at;
+  const mediaUrl = (event: CoughEvent, kind: "image" | "audio") =>
+    `/api/events/${encodeURIComponent(event.event_id)}/${kind}`;
 
   const pageSize = 6;
-  const devices = ["all", ...new Set(events.map((event) => event.deviceId))];
-  const deviceItems = devices.map((value) => ({
-    value,
-    label: value === "all" ? "All" : value,
-  }));
+  const deviceItems = $derived(
+    ["all", ...new Set(data.events.map((event) => event.device_id))].map(
+      (value) => ({ value, label: value === "all" ? "All" : value }),
+    ),
+  );
   const statusItems = [
     { value: "all", label: "All" },
-    { value: "Under Monitoring", label: "Under Monitoring" },
-    { value: "Resolved", label: "Resolved" },
+    ...Object.entries(results).map(([value, { label }]) => ({ value, label })),
   ];
   const sortItems = [
     { value: "newest", label: "Newest" },
     { value: "oldest", label: "Oldest" },
-    { value: "status", label: "Status" },
+    { value: "status", label: "Result" },
   ];
 
   const query = $derived(page.url.searchParams.get("q") ?? "");
@@ -150,20 +75,21 @@
   const filtered = $derived.by(() => {
     const normalizedQuery = query.trim().toLowerCase();
 
-    return events
+    return data.events
       .filter((event) => {
         const searchable =
-          `${event.uuid} ${event.deviceId} ${event.status}`.toLowerCase();
+          `${event.event_id} ${event.device_id} ${resultOf(event).label} ${event.zone_label ?? ""}`.toLowerCase();
         return (
           searchable.includes(normalizedQuery) &&
-          (device === "all" || event.deviceId === device) &&
-          (status === "all" || event.status === status)
+          (device === "all" || event.device_id === device) &&
+          (status === "all" || event.result === status)
         );
       })
       .toSorted((a, b) => {
-        if (sort === "oldest") return a.timestamp.localeCompare(b.timestamp);
-        if (sort === "status") return a.status.localeCompare(b.status);
-        return b.timestamp.localeCompare(a.timestamp);
+        if (sort === "oldest") return timeOf(a).localeCompare(timeOf(b));
+        if (sort === "status")
+          return resultOf(a).label.localeCompare(resultOf(b).label);
+        return timeOf(b).localeCompare(timeOf(a));
       });
   });
   const pages = $derived(Math.max(1, Math.ceil(filtered.length / pageSize)));
@@ -203,13 +129,14 @@
   }
 
   function exportCsv() {
-    const header = ["No.", "Time", "UUID", "Device ID", "Status"];
-    const rows = filtered.map((event) => [
-      String(event.id),
-      formatTimestamp(event.timestamp),
-      event.uuid,
-      event.deviceId,
-      event.status,
+    const header = ["No.", "Time", "Event ID", "Device ID", "Result", "Zone"];
+    const rows = filtered.map((event, index) => [
+      String(index + 1),
+      formatTimestamp(timeOf(event)),
+      event.event_id,
+      event.device_id,
+      resultOf(event).label,
+      event.zone_label ?? "",
     ]);
     const csv = [header, ...rows]
       .map((row) => row.map(escapeCsv).join(","))
@@ -257,16 +184,9 @@
 
   <Card.Root>
     <Card.Header class="pb-3">
-      <Card.Title class="text-base">Related Cough Data</Card.Title>
+      <Card.Title class="text-base">Cough Events</Card.Title>
     </Card.Header>
     <Card.Content class="flex flex-col gap-3">
-      <div
-        role="status"
-        class="rounded-xl border border-primary/15 bg-primary/5 px-4 py-3 text-xs text-primary"
-      >
-        The following data is suspected to originate from the same person.
-      </div>
-
       <div
         class="grid gap-3 md:grid-cols-[minmax(14rem,1.5fr)_minmax(9rem,1fr)_minmax(9rem,1fr)_minmax(10rem,1fr)]"
       >
@@ -317,7 +237,7 @@
           <label
             class="flex min-w-0 flex-col gap-1 text-xs text-muted-foreground"
           >
-            <span>Status</span>
+            <span>Result</span>
             <Select.Root
               type="single"
               items={statusItems}
@@ -327,7 +247,7 @@
               <Select.Trigger
                 class="w-full bg-background"
                 size="sm"
-                aria-label="Filter by status"
+                aria-label="Filter by result"
               >
                 <Select.Value placeholder="All" />
               </Select.Trigger>
@@ -370,10 +290,8 @@
         </div>
       </div>
 
-      <Table.Root class="min-w-[720px] text-xs">
-        <Table.Caption class="sr-only">
-          Acoustic detection event history.
-        </Table.Caption>
+      <Table.Root class="min-w-[960px] text-xs">
+        <Table.Caption class="sr-only">Cough event history.</Table.Caption>
         <Table.Header class="[&_tr]:border-0">
           <Table.Row class="bg-primary/[0.035] hover:bg-primary/[0.035]">
             <Table.Head
@@ -389,7 +307,7 @@
             <Table.Head
               scope="col"
               class="text-[10px] uppercase tracking-[0.12em] text-primary/60"
-              >UUID</Table.Head
+              >Event ID</Table.Head
             >
             <Table.Head
               scope="col"
@@ -399,59 +317,88 @@
             <Table.Head
               scope="col"
               class="text-[10px] uppercase tracking-[0.12em] text-primary/60"
-              >Status</Table.Head
+              >Result</Table.Head
+            >
+            <Table.Head
+              scope="col"
+              class="text-[10px] uppercase tracking-[0.12em] text-primary/60"
+              >Zone</Table.Head
             >
             <Table.Head
               scope="col"
               class="text-[10px] uppercase tracking-[0.12em] text-primary/60"
               >Photo</Table.Head
             >
+            <Table.Head
+              scope="col"
+              class="text-[10px] uppercase tracking-[0.12em] text-primary/60"
+              >Audio</Table.Head
+            >
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {#each visible as event (event.id)}
+          {#each visible as event, index (event.event_id)}
+            {@const result = resultOf(event)}
             <Table.Row class="h-[78px] hover:bg-muted/30">
               <Table.Cell class="pl-4 tabular-nums text-muted-foreground"
-                >{event.id}</Table.Cell
+                >{(safePage - 1) * pageSize + index + 1}</Table.Cell
               >
               <Table.Cell
                 class="whitespace-nowrap tabular-nums text-muted-foreground"
-                >{formatTimestamp(event.timestamp)}</Table.Cell
+                >{formatTimestamp(timeOf(event))}</Table.Cell
               >
               <Table.Cell class="font-mono text-muted-foreground"
-                >{event.uuid}</Table.Cell
+                >{event.event_id}</Table.Cell
               >
-              <Table.Cell class="font-semibold">{event.deviceId}</Table.Cell>
+              <Table.Cell class="font-semibold">{event.device_id}</Table.Cell>
               <Table.Cell>
                 <Badge
                   variant="outline"
-                  class={cn(
-                    "gap-1.5 px-2.5 text-[11px]",
-                    event.status === "Resolved"
-                      ? "border-success/20 bg-success/5 text-success"
-                      : "border-warning/25 bg-warning/5 text-warning",
-                  )}
+                  class={cn("gap-1.5 px-2.5 text-[11px]", result.tone)}
                 >
                   <span
                     class="size-1.5 rounded-full bg-current"
                     aria-hidden="true"
                   ></span>
-                  {event.status}
+                  {result.label}
                 </Badge>
               </Table.Cell>
+              <Table.Cell class="text-muted-foreground"
+                >{event.zone_label ?? "—"}</Table.Cell
+              >
               <Table.Cell>
-                <img
-                  src={event.photo}
-                  alt={`Event ${event.id} camera capture`}
-                  loading="lazy"
-                  class="h-12 w-20 rounded-lg object-cover"
-                />
+                {#if event.has_image}
+                  <a
+                    href={mediaUrl(event, "image")}
+                    target="_blank"
+                    rel="external noopener"
+                    aria-label={`Open camera capture for event ${event.event_id}`}
+                  >
+                    <img
+                      src={mediaUrl(event, "image")}
+                      alt=""
+                      loading="lazy"
+                      class="h-12 w-20 rounded-lg object-cover"
+                    />
+                  </a>
+                {:else}
+                  <span class="text-muted-foreground">No image</span>
+                {/if}
+              </Table.Cell>
+              <Table.Cell>
+                <audio
+                  controls
+                  preload="none"
+                  src={mediaUrl(event, "audio")}
+                  aria-label={`Cough audio for event ${event.event_id}`}
+                  class="h-8 w-48"
+                ></audio>
               </Table.Cell>
             </Table.Row>
           {:else}
             <Table.Row>
               <Table.Cell
-                colspan={6}
+                colspan={8}
                 class="h-24 text-center text-muted-foreground"
                 >No events found.</Table.Cell
               >
