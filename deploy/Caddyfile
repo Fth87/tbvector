@@ -1,4 +1,10 @@
 {$APP_DOMAIN} {
+	@root path /
+	header @root {
+		Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
+		Pragma "no-cache"
+	}
+
 	# Backend lives in the tbvector-server repo, joined via the tbvector-edge network.
 	handle /api/* {
 		request_body {
