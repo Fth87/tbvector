@@ -1,5 +1,23 @@
 <script lang="ts">
+  import { goto } from "$app/navigation";
   import { resolve } from "$app/paths";
+  import UserRound from "@lucide/svelte/icons/user-round";
+
+  let accountLoading = $state(false);
+
+  async function openAccount() {
+    if (accountLoading) return;
+
+    accountLoading = true;
+    try {
+      const response = await fetch("/api/auth/me");
+      await goto(resolve(response.ok ? "/dashboard" : "/login"));
+    } catch {
+      await goto(resolve("/login"));
+    } finally {
+      accountLoading = false;
+    }
+  }
 
   const processSteps = [
     {
@@ -105,6 +123,17 @@
     <a class="brand-mark" href={resolve("/")} aria-label="TB VEctor home">
       <img src="/images/tbvector/image-16.png" alt="TB VEctor" />
     </a>
+    <button
+      class="account-button"
+      type="button"
+      aria-label="Open account"
+      title="Open account"
+      aria-busy={accountLoading}
+      disabled={accountLoading}
+      onclick={openAccount}
+    >
+      <UserRound size={22} strokeWidth={2.2} aria-hidden="true" />
+    </button>
   </header>
 
   <main>
@@ -359,6 +388,40 @@
   .brand-mark img {
     height: 2.8rem;
     width: auto;
+  }
+  .account-button {
+    align-items: center;
+    background: #fff;
+    border: 0;
+    border-radius: 999px;
+    box-shadow: 0 4px 14px #06202b22;
+    color: #077a7d;
+    cursor: pointer;
+    display: grid;
+    height: 2.8rem;
+    place-items: center;
+    position: absolute;
+    right: max(1.5rem, calc((100vw - 1300px) / 2));
+    top: 50%;
+    transform: translateY(-50%);
+    transition:
+      background 160ms ease,
+      color 160ms ease,
+      transform 160ms ease;
+    width: 2.8rem;
+  }
+  .account-button:hover {
+    background: #077a7d;
+    color: #fff;
+    transform: translateY(-50%) scale(1.05);
+  }
+  .account-button:focus-visible {
+    outline: 3px solid #7ae2cf;
+    outline-offset: 3px;
+  }
+  .account-button:disabled {
+    cursor: wait;
+    opacity: 0.7;
   }
   .hero {
     background: #f5ece5;
@@ -674,6 +737,11 @@
     }
     .brand-mark img {
       height: 1.8rem;
+    }
+    .account-button {
+      height: 2.25rem;
+      right: 0.75rem;
+      width: 2.25rem;
     }
     .hero {
       height: min(100svh, 720px);
