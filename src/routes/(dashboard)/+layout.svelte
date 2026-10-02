@@ -1,7 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { page } from "$app/state";
-  import ChevronDown from "@lucide/svelte/icons/chevron-down";
   import UserRound from "@lucide/svelte/icons/user-round";
   import * as Sidebar from "$lib/components/ui/sidebar";
   import AppSidebar from "$lib/components/layout/AppSidebar.svelte";
@@ -36,7 +35,14 @@
         }).format(date)
       : "--:--:--";
 
-  let { children } = $props();
+  let { children, data } = $props();
+
+  const online = $derived(
+    data.devices.filter((device) => device.connected).length,
+  );
+  const allOnline = $derived(
+    data.devices.length > 0 && online === data.devices.length,
+  );
 </script>
 
 <Sidebar.Provider class="!bg-gradient-to-br from-[#F1F8F9]  to-[#97E3E8]"
@@ -48,7 +54,7 @@
           <Sidebar.Trigger aria-label="Toggle sidebar" />
           <div class="min-w-0">
             <p class="truncate text-xs text-muted-foreground">
-              Hi Andri Setiawan,
+              Hi {data.admin.username},
             </p>
             <h1
               class="truncate text-lg font-bold tracking-tight text-foreground lg:text-xl"
@@ -63,35 +69,30 @@
         >
           <div class="flex items-center gap-2 px-3">
             <span
-              class="grid size-8 place-items-center rounded-lg bg-success/10 text-success"
+              class="grid size-8 place-items-center rounded-lg {allOnline
+                ? 'bg-success/10 text-success'
+                : 'bg-muted text-muted-foreground'}"
             >
               <span
-                class="size-2 rounded-full bg-success shadow-[0_0_0_3px] shadow-success/10"
+                class="size-2 rounded-full {allOnline
+                  ? 'bg-success shadow-[0_0_0_3px] shadow-success/10'
+                  : 'bg-muted-foreground/50'}"
                 aria-hidden="true"
               ></span>
             </span>
             <div class="leading-tight">
               <p
-                class="text-[11px] font-bold uppercase tracking-wide text-success"
+                class="text-[11px] font-bold uppercase tracking-wide {allOnline
+                  ? 'text-success'
+                  : 'text-muted-foreground'}"
               >
-                System Online
+                {online ? "Devices online" : "No device online"}
               </p>
               <p class="text-[11px] text-muted-foreground">
-                All devices operational
+                {online} of {data.devices.length} sending heartbeats
               </p>
             </div>
           </div>
-
-          <button class="flex items-center gap-3 px-4 text-left" type="button">
-            <div class="leading-tight">
-              <p class="text-[10px] text-muted-foreground">Facility</p>
-              <p class="text-xs font-semibold">Main Facility</p>
-            </div>
-            <ChevronDown
-              class="size-3.5 text-muted-foreground"
-              aria-hidden="true"
-            />
-          </button>
 
           <div class="px-4 leading-tight">
             <p class="text-[11px] text-muted-foreground">{formatDate(now)}</p>
@@ -107,8 +108,8 @@
               <UserRound class="size-4" aria-hidden="true" />
             </span>
             <div class="leading-tight">
-              <p class="text-xs font-semibold">Admin</p>
-              <p class="text-[11px] text-muted-foreground">Operator</p>
+              <p class="text-xs font-semibold">{data.admin.username}</p>
+              <p class="text-[11px] text-muted-foreground">Administrator</p>
             </div>
           </div>
         </div>
