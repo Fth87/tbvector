@@ -13,41 +13,15 @@
   import * as Sidebar from "$lib/components/ui/sidebar";
   import * as Table from "$lib/components/ui/table";
   import { cn } from "$lib/utils.js";
-  import type { CoughEvent } from "./+page";
+  import { mediaUrl } from "$lib/api";
+  import {
+    RESULTS as results,
+    formatTimestamp,
+    resultOf,
+    timeOf,
+  } from "$features/events/format";
 
   let { data } = $props();
-
-  // Meanings from server-handoff.md, section 2 ("result").
-  const results: Record<string, { label: string; tone: string }> = {
-    matched: {
-      label: "Matched",
-      tone: "border-success/20 bg-success/5 text-success",
-    },
-    ambiguous: {
-      label: "Ambiguous",
-      tone: "border-warning/25 bg-warning/5 text-warning",
-    },
-    unmatched: {
-      label: "Unmatched",
-      tone: "border-info/20 bg-info/5 text-info",
-    },
-    outside_view: {
-      label: "Outside view",
-      tone: "border-border bg-muted text-muted-foreground",
-    },
-    no_direction: {
-      label: "No direction",
-      tone: "border-border bg-muted text-muted-foreground",
-    },
-  };
-  const resultOf = (event: CoughEvent) =>
-    results[event.result ?? ""] ?? {
-      label: event.result ?? "Unknown",
-      tone: "border-border bg-muted text-muted-foreground",
-    };
-  const timeOf = (event: CoughEvent) => event.utc ?? event.received_at;
-  const mediaUrl = (event: CoughEvent, kind: "image" | "audio") =>
-    `/api/events/${encodeURIComponent(event.event_id)}/${kind}`;
 
   const pageSize = 6;
   const deviceItems = $derived(
@@ -98,15 +72,6 @@
     filtered.slice((safePage - 1) * pageSize, safePage * pageSize),
   );
 
-  const dateTimeFormatter = new Intl.DateTimeFormat("en-US", {
-    month: "numeric",
-    day: "numeric",
-    year: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-    second: "2-digit",
-  });
-
   function setParam(key: string, value: string) {
     const url = new URL(page.url);
     value && value !== "all" && value !== "newest"
@@ -118,10 +83,6 @@
       keepFocus: true,
       noScroll: true,
     });
-  }
-
-  function formatTimestamp(timestamp: string) {
-    return dateTimeFormatter.format(new Date(timestamp));
   }
 
   function escapeCsv(value: string) {
@@ -369,13 +330,13 @@
               <Table.Cell>
                 {#if event.has_image}
                   <a
-                    href={mediaUrl(event, "image")}
+                    href={mediaUrl(event.event_id, "image")}
                     target="_blank"
                     rel="external noopener"
                     aria-label={`Open camera capture for event ${event.event_id}`}
                   >
                     <img
-                      src={mediaUrl(event, "image")}
+                      src={mediaUrl(event.event_id, "image")}
                       alt=""
                       loading="lazy"
                       class="h-12 w-20 rounded-lg object-cover"
@@ -389,7 +350,7 @@
                 <audio
                   controls
                   preload="none"
-                  src={mediaUrl(event, "audio")}
+                  src={mediaUrl(event.event_id, "audio")}
                   aria-label={`Cough audio for event ${event.event_id}`}
                   class="h-8 w-48"
                 ></audio>
